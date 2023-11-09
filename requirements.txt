@@ -1,0 +1,4 @@
+ipython[notebook]
+opencv-python
+requests
+openai
