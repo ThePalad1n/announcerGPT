@@ -1,16 +1,7 @@
-import os
-from dotenv import load_dotenv
 import cv2
 import numpy as np
 import pyautogui
 import time
-from pathlib import Path
-from openai import OpenAI
-client = OpenAI(
-        # Get the API key from the environment variable
-    api_key = os.getenv('API_KEY')
-)
-
 
 import base64
 import requests
@@ -77,7 +68,6 @@ def description_text(x):    # Extracting the 'content' from the first 'choice' i
             # Assuming each 'choice' has a 'message' with 'content'
             content_text = first_choice['message']['content']
             print(content_text)
-            return content_text
         else:
             print("The 'message' or 'content' key is missing in the first choice.")
     else:
@@ -90,38 +80,23 @@ capture_interval = 10  # Capture every 10 seconds
 while True:
     # Capture the screen
     screenshot = pyautogui.screenshot()
-
+    
     # Convert the screenshot to a format that OpenCV can read
     frame = np.array(screenshot)
-    # Convert the image color to BGR
-    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-
+    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # Convert the image color to BGR
+    
+    # Save the captured image to disk
     timestamp = time.strftime("%Y%m%d-%H%M%S")  # Get a timestamp for the filename
     filename = f"image_{timestamp}.png"  # Create a filename with the timestamp
-
     cv2.imwrite(filename, frame)  # Save the image
-
+    
     print(f"Captured {filename}")
     base64_image = encode_image(filename)
     # Get the description of the image
     get_image_description(base64_image)
-   
+    
 
+
+
+    # Wait for the specified interval before capturing the next screenshot
     time.sleep(capture_interval)
-
-    # Output file path for the MP3
-    speech_file_path = "speech.mp3"
-
-    # Call the OpenAI API to generate speech
-    response = client.audio.speech.create(
-        model="tts-1",
-        voice="echo",
-        input="Today is a wonderful day to build something people love!"
-    )
-
-    # Save the generated speech to an MP3 file
-    with open(speech_file_path, 'wb') as f:
-        f.write(response.content)
-
-    time.sleep(capture_interval)
-
