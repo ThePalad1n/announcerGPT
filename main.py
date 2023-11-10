@@ -6,26 +6,19 @@ import pyautogui
 import time
 from pathlib import Path
 from openai import OpenAI
+import base64
+import requests
+
 client = OpenAI(
         # Get the API key from the environment variable
     api_key = os.getenv('API_KEY')
 )
-
-
-import base64
-import requests
-
-import openai
-
-from dotenv import load_dotenv
-import os
 
 # Load the .env file
 load_dotenv()
 
 # Retrieve the API_KEY
 api_key = os.getenv("API_KEY")
-
 
 #Function to encode the image to base64
 def encode_image(filename):
@@ -50,7 +43,7 @@ def get_image_description(base64_image):
                 "content": [
                     {
                         "type": "text",
-                        "text": "Describe the image like an announcer for a broadcast."
+                        "text": "Describe the image of this League of Legends match like an announcer for a broadcast."
                     },
                     {
                         "type": "image_url",
@@ -77,11 +70,26 @@ def description_text(x):    # Extracting the 'content' from the first 'choice' i
             # Assuming each 'choice' has a 'message' with 'content'
             content_text = first_choice['message']['content']
             print(content_text)
-            return content_text
+            speech(content_text)
         else:
             print("The 'message' or 'content' key is missing in the first choice.")
     else:
         print("The 'choices' key is missing in the response or is empty.")
+
+def speech(content_text):
+    # Output file path for the MP3
+    speech_file_path = "speech.mp3"
+
+    # Call the OpenAI API to generate speech
+    response = client.audio.speech.create(
+        model="tts-1",
+        voice="echo",
+        input=content_text
+    )
+
+    # Save the generated speech to an MP3 file
+    with open(speech_file_path, 'wb') as f:
+        f.write(response.content)
 
 # Set the interval between captures (in seconds).
 capture_interval = 10  # Capture every 10 seconds
@@ -105,23 +113,6 @@ while True:
     base64_image = encode_image(filename)
     # Get the description of the image
     get_image_description(base64_image)
-   
 
-    time.sleep(capture_interval)
 
-    # Output file path for the MP3
-    speech_file_path = "speech.mp3"
-
-    # Call the OpenAI API to generate speech
-    response = client.audio.speech.create(
-        model="tts-1",
-        voice="echo",
-        input="Today is a wonderful day to build something people love!"
-    )
-
-    # Save the generated speech to an MP3 file
-    with open(speech_file_path, 'wb') as f:
-        f.write(response.content)
-
-    time.sleep(capture_interval)
 
