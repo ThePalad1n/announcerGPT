@@ -79,4 +79,5 @@ Inside the [leagueTest folder](https://github.com/ThePalad1n/announcerGPT/tree/m
 I then combined them without trimming using an online tool and it generated this [screen recording combined with audio](https://drive.google.com/file/d/1n4PswS76Umk4U10BV1bAZiiqcm7ozZsm/view?usp=sharing)
 
 ## Future Implementations
-tba
+
+Some applications making it accessible for visually impaired individuals or for various automation tasks.
